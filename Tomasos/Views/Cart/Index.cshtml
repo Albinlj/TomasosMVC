@@ -1,0 +1,13 @@
+﻿@model Tomasos.Models.Cart 
+
+@{
+    ViewData["Title"] = "View";
+}
+
+<h1>Viewing Cart</h1>
+@foreach (Item item in Model.Items) {
+    <h1>@item.Matratt.MatrattNamn</h1>
+    <h2>@item.Quantity</h2>
+}
+
+<a asp-controller="Cart" asp-action="Order">Order</a>

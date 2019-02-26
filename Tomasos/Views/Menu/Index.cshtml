@@ -1,0 +1,25 @@
+﻿@using Microsoft.EntityFrameworkCore
+@using Tomasos.Models
+@model Tomasos.Models.MenuViewModels.ListViewModel
+
+@{
+    ViewBag.Title = "title";
+    Layout = "_Layout";
+}
+
+@foreach (MatrattTyp matrattTyp in Model.MatrattTyp)
+{
+    <h2>@matrattTyp.Beskrivning</h2>
+    @foreach (Matratt matratt in matrattTyp.Matratt)
+    {
+        <h3>@matratt.MatrattNamn</h3>
+        <h4>@matratt.Beskrivning</h4>
+        <a asp-controller="cart" asp-action="add" asp-route-id="@matratt.MatrattId">Add to Cart</a>
+        <h5>
+            @foreach (MatrattProdukt matrattProdukt in matratt.MatrattProdukt)
+            {
+                @matrattProdukt.Produkt.ProduktNamn
+            }
+        </h5>
+    }
+}
