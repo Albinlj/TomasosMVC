@@ -1,4 +1,5 @@
-﻿@using Microsoft.EntityFrameworkCore
+﻿@using Microsoft.CodeAnalysis.CSharp.Syntax
+@using Microsoft.EntityFrameworkCore
 @using Tomasos.Models
 @model Tomasos.Models.MenuViewModels.ListViewModel
 
@@ -7,19 +8,28 @@
     Layout = "_Layout";
 }
 
-@foreach (MatrattTyp matrattTyp in Model.MatrattTyp)
+@foreach (DishType dishType in Model.DishType)
 {
-    <h2>@matrattTyp.Beskrivning</h2>
-    @foreach (Matratt matratt in matrattTyp.Matratt)
+    <h2>@dishType.Description</h2>
+    @foreach (Dish dish in dishType.Dishes)
     {
-        <h3>@matratt.MatrattNamn</h3>
-        <h4>@matratt.Beskrivning</h4>
-        <a asp-controller="cart" asp-action="add" asp-route-id="@matratt.MatrattId">Add to Cart</a>
-        <h5>
-            @foreach (MatrattProdukt matrattProdukt in matratt.MatrattProdukt)
-            {
-                @matrattProdukt.Produkt.ProduktNamn
+        <h4>@dish.Name</h4>
+        <h6>@dish.Description</h6>
+        <a asp-controller="cart" asp-action="add" asp-route-id="@dish.Id">Add to Cart</a>
+        <p>
+            @{
+                string ingredientString = "";
+
+                @foreach (DishIngredient dishIngredient in dish.DishIngredients)
+                {
+                    ingredientString += @dishIngredient.Ingredient.Name + ", ";
+                }
+                ingredientString = ingredientString.ToLower().Substring(0, ingredientString.Length - 2) + ".";
+                char firstChar = ingredientString[0];
+                ingredientString = ingredientString.Substring(1).Insert(0, firstChar.ToString().ToUpper());
+                @ingredientString;
             }
-        </h5>
+        </p>
     }
+    <hr />
 }

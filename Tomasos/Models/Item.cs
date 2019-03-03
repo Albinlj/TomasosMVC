@@ -7,7 +7,7 @@ namespace Tomasos.Models
 {
     public class Item
     {
-        public Matratt Matratt { get; set; }
+        public Dish Dish { get; set; }
         public int Quantity { get; set; }
     }
 }

@@ -138,6 +138,10 @@ namespace Tomasos.Migrations
 
                     b.Property<string>("Address");
 
+                    b.Property<int>("Bonus");
+
+                    b.Property<int>("BonusPoints");
+
                     b.Property<string>("City");
 
                     b.Property<string>("ConcurrencyStamp")
@@ -148,11 +152,13 @@ namespace Tomasos.Migrations
 
                     b.Property<bool>("EmailConfirmed");
 
+                    b.Property<string>("FirstName");
+
+                    b.Property<string>("LastName");
+
                     b.Property<bool>("LockoutEnabled");
 
                     b.Property<DateTimeOffset?>("LockoutEnd");
-
-                    b.Property<string>("Name");
 
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256);
@@ -186,6 +192,120 @@ namespace Tomasos.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers");
+                });
+
+            modelBuilder.Entity("Tomasos.Models.Dish", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Description");
+
+                    b.Property<string>("Name");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(5, 2)");
+
+                    b.Property<int?>("TypeId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TypeId");
+
+                    b.ToTable("Dishes");
+                });
+
+            modelBuilder.Entity("Tomasos.Models.DishIngredient", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int?>("DishId");
+
+                    b.Property<int?>("IngredientId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DishId");
+
+                    b.HasIndex("IngredientId");
+
+                    b.ToTable("DishIngredients");
+                });
+
+            modelBuilder.Entity("Tomasos.Models.DishType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Description");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("DishTypes");
+                });
+
+            modelBuilder.Entity("Tomasos.Models.Ingredient", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int?>("DishId");
+
+                    b.Property<string>("Name");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DishId");
+
+                    b.ToTable("Ingredients");
+                });
+
+            modelBuilder.Entity("Tomasos.Models.Order", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<bool>("IsDelivered");
+
+                    b.Property<DateTime>("OrderDate");
+
+                    b.Property<decimal>("Sum")
+                        .HasColumnType("decimal(5, 2)");
+
+                    b.Property<string>("UserId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Orders");
+                });
+
+            modelBuilder.Entity("Tomasos.Models.OrderDish", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("Amount");
+
+                    b.Property<int?>("DishId");
+
+                    b.Property<int?>("OrderId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DishId");
+
+                    b.HasIndex("OrderId");
+
+                    b.ToTable("OrderDishes");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -231,6 +351,49 @@ namespace Tomasos.Migrations
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Tomasos.Models.Dish", b =>
+                {
+                    b.HasOne("Tomasos.Models.DishType", "Type")
+                        .WithMany("Dishes")
+                        .HasForeignKey("TypeId");
+                });
+
+            modelBuilder.Entity("Tomasos.Models.DishIngredient", b =>
+                {
+                    b.HasOne("Tomasos.Models.Dish", "Dish")
+                        .WithMany("DishIngredients")
+                        .HasForeignKey("DishId");
+
+                    b.HasOne("Tomasos.Models.Ingredient", "Ingredient")
+                        .WithMany("DishIngredients")
+                        .HasForeignKey("IngredientId");
+                });
+
+            modelBuilder.Entity("Tomasos.Models.Ingredient", b =>
+                {
+                    b.HasOne("Tomasos.Models.Dish")
+                        .WithMany("Ingredients")
+                        .HasForeignKey("DishId");
+                });
+
+            modelBuilder.Entity("Tomasos.Models.Order", b =>
+                {
+                    b.HasOne("Tomasos.Models.AppUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+                });
+
+            modelBuilder.Entity("Tomasos.Models.OrderDish", b =>
+                {
+                    b.HasOne("Tomasos.Models.Dish", "Dish")
+                        .WithMany("Orders")
+                        .HasForeignKey("DishId");
+
+                    b.HasOne("Tomasos.Models.Order", "Order")
+                        .WithMany("OrderDishes")
+                        .HasForeignKey("OrderId");
                 });
 #pragma warning restore 612, 618
         }

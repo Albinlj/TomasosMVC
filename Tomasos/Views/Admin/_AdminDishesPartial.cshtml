@@ -1,0 +1,18 @@
+﻿@using Tomasos.Models.DishViewModels
+@model Tomasos.Models.AdminViewModels.AdminDishesViewModel
+<h1>Edit Dishes</h1>
+@foreach (EditDishViewModel editDishViewModel in Model.EditDishViewModels)
+{
+    <div id="@editDishViewModel.Dish.Id">
+
+        <a asp-action="Edit"
+           asp-controller="Dish"
+           asp-route-id="@editDishViewModel.Dish.Id"
+           data-ajax="true"
+           data-ajax-method="GET"
+           data-ajax-mode="replace"
+           data-ajax-update="#@editDishViewModel.Dish.Id">
+            @editDishViewModel.Dish.Name
+        </a>
+    </div>
+}

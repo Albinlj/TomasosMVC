@@ -1,0 +1,18 @@
+﻿@model object
+
+@{
+    ViewBag.Title = "title";
+    Layout = "_Layout";
+}
+
+<h2>title</h2>
+
+<a asp-action="GetStrut"
+   asp-controller="Ajax"
+   asp-route-id="5"
+   data-ajax="true"
+   data-ajax-method="GET"
+   data-ajax-mode="append"
+   data-ajax-update="#MinDetaljDiv">Get the strut
+</a>
+<div id="MinDetaljDiv"></div>

@@ -32,34 +32,28 @@ namespace Tomasos
         {
             services.Configure<CookiePolicyOptions>(options =>
             {
-                // This lambda determines whether user consent for non-essential cookies is needed for a given request.
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
+            services.AddDistributedMemoryCache();
+            services.AddSession();
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-
-
-
-            services.AddDbContext<TomasosContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
-            services.AddDbContext<IdentityContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
-
-
+            services.AddDbContext<IdentityContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddIdentity<AppUser, IdentityRole>()
+                .AddDefaultUI()
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<IdentityContext>()
                 .AddDefaultTokenProviders();
 
-            services.AddDistributedMemoryCache();
-            services.AddSession();
 
-
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IServiceProvider pro)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IServiceProvider serviceProvider)
         {
             if (env.IsDevelopment())
             {
@@ -72,7 +66,7 @@ namespace Tomasos
                 app.UseHsts();
             }
 
-            CreateRoles(pro).Wait();
+            //CreateRoles(serviceProvider).Wait();
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
@@ -88,6 +82,8 @@ namespace Tomasos
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
         }
+
+
 
         private async Task CreateRoles(IServiceProvider serviceProvider)
         {
@@ -107,25 +103,28 @@ namespace Tomasos
 
 
             //Here you could create a super user who will maintain the web app
-            var poweruser = new AppUser
-            {
-                UserName = Configuration["AppSettings:UserName"],
-                Email = Configuration["AppSettings:UserEmail"],
-            };
-
-            //Ensure you have these values in your appsettings.json file
-            string userPWD = Configuration["AppSettings:UserPassword"];
-            //var _user = await userManager.FindByEmailAsync(Configuration["AppSettings:AdminUserEmail"]);
             var _user = await userManager.FindByEmailAsync(Configuration["AppSettings:UserPassword"]);
+
 
             if (_user == null)
             {
-                var createPowerUser = await userManager.CreateAsync(poweruser, userPWD);
-                if (createPowerUser.Succeeded)
+                var poweruser = new AppUser
                 {
-                    //here we tie the new user to the role
-                    await userManager.AddToRoleAsync(poweruser, Roles.Adminstrator.ToString());
+                    FirstName = "Admino",
+                    LastName = "Adminsson",
+                    UserName = Configuration["AppSettings:UserName"],
+                    Email = Configuration["AppSettings:UserEmail"],
+                };
 
+                string userPWD = Configuration["AppSettings:UserPassword"];
+                {
+                    var createPowerUser = await userManager.CreateAsync(poweruser, userPWD);
+                    if (createPowerUser.Succeeded)
+                    {
+                        await userManager.AddToRoleAsync(poweruser, Roles.Administrator.ToString());
+                        await userManager.AddToRoleAsync(poweruser, Roles.Premium.ToString());
+
+                    }
                 }
             }
         }

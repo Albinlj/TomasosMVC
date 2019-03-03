@@ -1,0 +1,29 @@
+﻿@model Tomasos.Models.AdminViewModels.UserEditViewModel
+@using Tomasos.Data
+@inject IdentityContext IdentityContext
+
+<table>
+    <tr>
+        <th>Is Premium User</th>
+        <th>Name</th>
+    </tr>
+    @foreach (var user in Model.Users)
+    {
+        <tr>
+            <td>
+                <input type="checkbox"
+                       asp-controller="admin"
+                       asp-action="ChangePremium"
+                       asp-route-id="@user.UserId"
+                       asp-route-isPremium="true"
+                       checked="@user.IsPremium"
+                       value="@user.IsPremium" />
+                @user.IsPremium
+            </td>
+            <td>@user.Name</td>
+        </tr>
+    }
+</table>
+
+
+

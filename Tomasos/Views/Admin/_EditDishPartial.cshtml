@@ -1,0 +1,42 @@
+﻿@model Tomasos.Models.DishViewModels.EditDishViewModel
+<div class="col-md-4">
+    <form asp-controller="Dish" asp-action="Edit">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <input type="hidden" asp-for="Dish.Id" />
+        <div class="form-group">
+            <label asp-for="Dish.Name" class="control-label"></label>
+            <input asp-for="Dish.Name" class="form-control" />
+            <span asp-validation-for="Dish.Name" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Dish.Description" class="control-label"></label>
+            <input asp-for="Dish.Description" class="form-control" />
+            <span asp-validation-for="Dish.Description" class="text-danger"></span>
+        </div>
+        @*<div class="form-group">
+                @foreach (DishIngredient dishIngredient in Model.Dish.DishIngredients)
+                {
+                    <div>
+                        @dishIngredient.Ingredient.Name
+                    </div>
+                }
+            </div>*@
+        <div class="form-group">
+            <select asp-for="ChosenIngredients" asp-items="@(new SelectList(Model.AvailableIngredients, "Id", "Name"))"></select>
+        </div>
+
+        <div class="form-group">
+            <select asp-for="SelectedTypeId" asp-items="@(new SelectList(Model.DishTypes, "Id", "Description"))"></select>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Dish.Price" class="control-label"></label>
+            <input asp-for="Dish.Price" class="form-control" />
+            <span asp-validation-for="Dish.Price" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <input type="submit" value="Save" class="btn btn-primary" />
+        </div>
+    </form>
+</div>

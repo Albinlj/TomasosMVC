@@ -11,6 +11,8 @@ using ASPNetCoreIdentity.Models.AccountViewModels;
 using Microsoft.Extensions.Logging;
 using Tomasos.Models;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Hosting.Internal;
+using Tomasos.Models.AccountViewModels;
 
 namespace Tomasos.Controllers
 {
@@ -58,7 +60,33 @@ namespace Tomasos.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit()
         {
-            return View();
+            AppUser user = await _userManager.FindByNameAsync(User.Identity.Name);
+            EditUserViewModel model = new EditUserViewModel
+            {
+                Address = user.Address,
+                City = user.City,
+                Email = user.Email,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                PhoneNumber = user.PhoneNumber,
+                PostalCode = user.PostalCode
+            };
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(EditUserViewModel model)
+        {
+            AppUser currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+            currentUser.Address = model.Address;
+            currentUser.City = model.City;
+            currentUser.FirstName = model.FirstName;
+            currentUser.LastName = model.LastName;
+            currentUser.PostalCode = model.PostalCode;
+            currentUser.PhoneNumber = model.PhoneNumber;
+            currentUser.PostalCode = model.PostalCode;
+            await _userManager.UpdateAsync(currentUser);
+            return View(model);
         }
 
 
@@ -84,7 +112,8 @@ namespace Tomasos.Controllers
             var user = new AppUser
             {
                 UserName = model.Email,
-                Name = model.FirstName + " " + model.LastName,
+                FirstName = model.FirstName,
+                LastName = model.LastName,
                 Address = model.Address,
                 PostalCode = model.PostalCode,
                 City = model.City,
@@ -162,6 +191,7 @@ namespace Tomasos.Controllers
         {
             return View();
         }
+
 
         public IActionResult Index()
         {

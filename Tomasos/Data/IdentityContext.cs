@@ -19,7 +19,13 @@ namespace Tomasos.Data
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
-
         }
+
+        public virtual DbSet<Order> Orders { get; set; }
+        public virtual DbSet<OrderDish> OrderDishes { get; set; }
+        public virtual DbSet<Dish> Dishes { get; set; }
+        public virtual DbSet<DishIngredient> DishIngredients { get; set; }
+        public virtual DbSet<DishType> DishTypes { get; set; }
+        public virtual DbSet<Ingredient> Ingredients { get; set; }
     }
 }

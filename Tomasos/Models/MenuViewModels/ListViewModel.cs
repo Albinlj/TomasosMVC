@@ -7,6 +7,6 @@ namespace Tomasos.Models.MenuViewModels
 {
     public class ListViewModel
     {
-        public IEnumerable<MatrattTyp> MatrattTyp { get; set; }
+        public IEnumerable<DishType> DishType { get; set; }
     }
 }

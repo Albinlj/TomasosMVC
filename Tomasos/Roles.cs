@@ -8,7 +8,7 @@ namespace Tomasos
     public enum Roles
     {
         Regular,
-        Adminstrator,
+        Administrator,
         Premium
     }
 }

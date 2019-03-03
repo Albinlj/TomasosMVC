@@ -1,4 +1,4 @@
-﻿@model object
+﻿@model Tomasos.Models.AdminViewModels.AdminViewModel
 
 @{
     ViewBag.Title = "title";
@@ -6,3 +6,25 @@
 }
 
 <h2>title</h2>
+
+<ul class="nav nav-tabs">
+    <li class="active"><a data-toggle="tab" href="#users">Premium Users</a></li>
+    <li><a data-toggle="tab" href="#ingredients">Ingredients</a></li>
+    <li><a data-toggle="tab" href="#dishes">Dishes</a></li>
+    <li><a data-toggle="tab" href="#orders">Orders</a></li>
+</ul>
+
+<div class="tab-content">
+    <div id="users" class="tab-pane fade in active">
+        @await Html.PartialAsync("_UserPartial", Model.UserEditViewModel)
+    </div>
+    <div id="ingredients" class="tab-pane fade">
+        @await Html.PartialAsync("_IngredientsPartial", Model.UserEditViewModel)
+    </div>
+    <div id="dishes" class="tab-pane fade">
+        @await Html.PartialAsync("_AdminDishesPartial", Model.AdminDishesViewModel)
+    </div>
+    <div id="orders" class="tab-pane fade">
+        @await Html.PartialAsync("_OrdersPartial", Model.UserEditViewModel)
+    </div>
+</div>
