@@ -36,7 +36,7 @@ namespace Tomasos.Controllers
                 .Include(d => d.DishIngredients)
                 .ThenInclude(di => di.Ingredient)
                 .FirstOrDefault(d => d.Id == id);
-            var model = new EditDishViewModel()
+            var model = new DishViewModel()
             {
                 Dish = dish,
                 DishTypes = IdentityContext.DishTypes.ToList(),
@@ -50,16 +50,49 @@ namespace Tomasos.Controllers
         }
 
         [HttpPost]
-        public IActionResult Edit(EditDishViewModel model)
+        public IActionResult Edit(DishViewModel model)
         {
             Dish dish = IdentityContext.Dishes.Find(model.Dish.Id);
             dish.Name = model.Dish.Name;
             dish.Description = model.Dish.Description;
             dish.Type = IdentityContext.DishTypes.Find(model.SelectedTypeId);
-            //dish.Ingredients = 
+            dish.Ingredients = IdentityContext.Ingredients.Where(i => model.ChosenIngredients.Contains(i.Id)).ToList();
+            IdentityContext.DishIngredients.RemoveRange(IdentityContext.DishIngredients.Include(di => di.Dish)
+                .Where(di => di.Dish.Id == model.Dish.Id).ToList());
+            dish.DishIngredients = dish.Ingredients.Select(i => new DishIngredient()
+            {
+                Ingredient = i,
+                Dish = dish,
+            }).ToList();
             IdentityContext.Dishes.Update(dish);
             IdentityContext.SaveChanges();
-            return Ok();
+            return RedirectToAction("Index", "Admin");
+        }
+
+
+        public IActionResult Create()
+        {
+            DishViewModel model = new DishViewModel();
+            model.AvailableIngredients = IdentityContext.Ingredients.ToList();
+            model.DishTypes = IdentityContext.DishTypes.ToList();
+            return View(model);
+        }
+
+        [HttpPost]
+        public IActionResult Create(DishViewModel model)
+        {
+            Dish dish = model.Dish;
+            dish.Ingredients = IdentityContext.Ingredients.Where(i => model.ChosenIngredients.Contains(i.Id)).ToList();
+            dish.DishIngredients = dish.Ingredients.Select(i => new DishIngredient()
+            {
+                Ingredient = i,
+                Dish = dish,
+            }).ToList();
+            dish.Type = IdentityContext.DishTypes.FirstOrDefault(dt => dt.Id == model.SelectedTypeId);
+            IdentityContext.Dishes.Add(dish);
+            IdentityContext.DishIngredients.AddRange(dish.DishIngredients);
+            IdentityContext.SaveChanges();
+            return RedirectToAction("Index", "Admin");
         }
     }
 }

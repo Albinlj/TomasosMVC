@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Tomasos.Helpers;
 using Tomasos.Models;
 
 namespace Tomasos.Controllers
@@ -21,6 +22,13 @@ namespace Tomasos.Controllers
 
         public IActionResult Index()
         {
+
+            CartModelView cartModelView = SessionHelper.GetObjectFromJson<CartModelView>(HttpContext.Session, "cartModelView");
+            if (cartModelView == null)
+            {
+            CartModelView emptyCart = new CartModelView();
+            SessionHelper.SetObjectAsJson(HttpContext.Session, "cartModelView", emptyCart);
+            }
             return View();
         }
 

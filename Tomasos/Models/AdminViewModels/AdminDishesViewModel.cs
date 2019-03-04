@@ -8,6 +8,6 @@ namespace Tomasos.Models.AdminViewModels
 {
     public class AdminDishesViewModel
     {
-        public List<EditDishViewModel> EditDishViewModels { get; set; } = new List<EditDishViewModel>();
+        public List<DishViewModel> EditDishViewModels { get; set; } = new List<DishViewModel>();
     }
 }

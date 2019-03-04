@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Tomasos.Migrations
 {
-    public partial class init : Migration
+    public partial class init2 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -41,10 +41,13 @@ namespace Tomasos.Migrations
                     LockoutEnd = table.Column<DateTimeOffset>(nullable: true),
                     LockoutEnabled = table.Column<bool>(nullable: false),
                     AccessFailedCount = table.Column<int>(nullable: false),
-                    Name = table.Column<string>(nullable: true),
+                    FirstName = table.Column<string>(nullable: true),
+                    LastName = table.Column<string>(nullable: true),
                     Address = table.Column<string>(nullable: true),
                     PostalCode = table.Column<string>(nullable: true),
-                    City = table.Column<string>(nullable: true)
+                    City = table.Column<string>(nullable: true),
+                    BonusPoints = table.Column<int>(nullable: false),
+                    Bonus = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -52,7 +55,7 @@ namespace Tomasos.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "MatrattTyp",
+                name: "DishTypes",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -61,20 +64,7 @@ namespace Tomasos.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_MatrattTyp", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Produkt",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    Name = table.Column<string>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Produkt", x => x.Id);
+                    table.PrimaryKey("PK_DishTypes", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -184,21 +174,21 @@ namespace Tomasos.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Bestallning",
+                name: "Orders",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     UserId = table.Column<string>(nullable: true),
                     OrderDate = table.Column<DateTime>(nullable: false),
-                    Sum = table.Column<int>(nullable: false),
+                    Sum = table.Column<decimal>(type: "decimal(5, 2)", nullable: false),
                     IsDelivered = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Bestallning", x => x.Id);
+                    table.PrimaryKey("PK_Orders", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Bestallning_AspNetUsers_UserId",
+                        name: "FK_Orders_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
@@ -206,30 +196,49 @@ namespace Tomasos.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Matratt",
+                name: "Dishes",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     Name = table.Column<string>(nullable: true),
                     Description = table.Column<string>(nullable: true),
-                    Price = table.Column<int>(nullable: false),
-                    Type = table.Column<int>(nullable: false),
-                    DishTypeNavigationId = table.Column<int>(nullable: true)
+                    Price = table.Column<decimal>(type: "decimal(5, 2)", nullable: false),
+                    TypeId = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Matratt", x => x.Id);
+                    table.PrimaryKey("PK_Dishes", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Matratt_MatrattTyp_DishTypeNavigationId",
-                        column: x => x.DishTypeNavigationId,
-                        principalTable: "MatrattTyp",
+                        name: "FK_Dishes_DishTypes_TypeId",
+                        column: x => x.TypeId,
+                        principalTable: "DishTypes",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "BestallningMatratt",
+                name: "Ingredients",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Name = table.Column<string>(nullable: true),
+                    DishId = table.Column<int>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Ingredients", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Ingredients_Dishes_DishId",
+                        column: x => x.DishId,
+                        principalTable: "Dishes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "OrderDishes",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -240,23 +249,23 @@ namespace Tomasos.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_BestallningMatratt", x => x.Id);
+                    table.PrimaryKey("PK_OrderDishes", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_BestallningMatratt_Matratt_DishId",
+                        name: "FK_OrderDishes_Dishes_DishId",
                         column: x => x.DishId,
-                        principalTable: "Matratt",
+                        principalTable: "Dishes",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_BestallningMatratt_Bestallning_OrderId",
+                        name: "FK_OrderDishes_Orders_OrderId",
                         column: x => x.OrderId,
-                        principalTable: "Bestallning",
+                        principalTable: "Orders",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "MatrattProdukt",
+                name: "DishIngredients",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -266,17 +275,17 @@ namespace Tomasos.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_MatrattProdukt", x => x.Id);
+                    table.PrimaryKey("PK_DishIngredients", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_MatrattProdukt_Matratt_DishId",
+                        name: "FK_DishIngredients_Dishes_DishId",
                         column: x => x.DishId,
-                        principalTable: "Matratt",
+                        principalTable: "Dishes",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_MatrattProdukt_Produkt_IngredientId",
+                        name: "FK_DishIngredients_Ingredients_IngredientId",
                         column: x => x.IngredientId,
-                        principalTable: "Produkt",
+                        principalTable: "Ingredients",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -321,34 +330,39 @@ namespace Tomasos.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Bestallning_UserId",
-                table: "Bestallning",
-                column: "UserId");
+                name: "IX_Dishes_TypeId",
+                table: "Dishes",
+                column: "TypeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_BestallningMatratt_DishId",
-                table: "BestallningMatratt",
+                name: "IX_DishIngredients_DishId",
+                table: "DishIngredients",
                 column: "DishId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_BestallningMatratt_OrderId",
-                table: "BestallningMatratt",
+                name: "IX_DishIngredients_IngredientId",
+                table: "DishIngredients",
+                column: "IngredientId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Ingredients_DishId",
+                table: "Ingredients",
+                column: "DishId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OrderDishes_DishId",
+                table: "OrderDishes",
+                column: "DishId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OrderDishes_OrderId",
+                table: "OrderDishes",
                 column: "OrderId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Matratt_DishTypeNavigationId",
-                table: "Matratt",
-                column: "DishTypeNavigationId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_MatrattProdukt_DishId",
-                table: "MatrattProdukt",
-                column: "DishId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_MatrattProdukt_IngredientId",
-                table: "MatrattProdukt",
-                column: "IngredientId");
+                name: "IX_Orders_UserId",
+                table: "Orders",
+                column: "UserId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -369,28 +383,28 @@ namespace Tomasos.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "BestallningMatratt");
+                name: "DishIngredients");
 
             migrationBuilder.DropTable(
-                name: "MatrattProdukt");
+                name: "OrderDishes");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "Bestallning");
+                name: "Ingredients");
 
             migrationBuilder.DropTable(
-                name: "Matratt");
+                name: "Orders");
 
             migrationBuilder.DropTable(
-                name: "Produkt");
+                name: "Dishes");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
 
             migrationBuilder.DropTable(
-                name: "MatrattTyp");
+                name: "DishTypes");
         }
     }
 }

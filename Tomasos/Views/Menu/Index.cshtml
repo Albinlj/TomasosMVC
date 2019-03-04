@@ -7,28 +7,32 @@
     ViewBag.Title = "title";
     Layout = "_Layout";
 }
+<h1>Menu</h1>
 
 @foreach (DishType dishType in Model.DishType)
 {
     <h2>@dishType.Description</h2>
     @foreach (Dish dish in dishType.Dishes)
     {
-        <h4>@dish.Name</h4>
-        <h6>@dish.Description</h6>
-        <a asp-controller="cart" asp-action="add" asp-route-id="@dish.Id">Add to Cart</a>
+        <h6>@dish.Name</h6>
         <p>
-            @{
-                string ingredientString = "";
+            @dish.Description            @{
+            <br />
+            string ingredientString = "";
 
-                @foreach (DishIngredient dishIngredient in dish.DishIngredients)
-                {
-                    ingredientString += @dishIngredient.Ingredient.Name + ", ";
-                }
-                ingredientString = ingredientString.ToLower().Substring(0, ingredientString.Length - 2) + ".";
-                char firstChar = ingredientString[0];
-                ingredientString = ingredientString.Substring(1).Insert(0, firstChar.ToString().ToUpper());
-                @ingredientString;
+            @foreach (DishIngredient dishIngredient in dish.DishIngredients)
+            {
+                ingredientString += @dishIngredient.Ingredient.Name + ", ";
             }
+            ingredientString = ingredientString.ToLower().Substring(0, ingredientString.Length - 2) + ".";
+            char firstChar = ingredientString[0];
+            ingredientString = ingredientString.Substring(1).Insert(0, firstChar.ToString().ToUpper());
+            @ingredientString;
+            }
+            <br />
+            Price: @dish.Price kr   
+            <a asp-controller="cart" asp-action="add" asp-route-id="@dish.Id">Add to Cart</a>
+            <br/>
         </p>
     }
     <hr />

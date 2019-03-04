@@ -5,13 +5,13 @@
     Layout = "_Layout";
 }
 
-<h2>title</h2>
+<h2>Secret Admin Control Panel</h2>
 
-<ul class="nav nav-tabs">
-    <li class="active"><a data-toggle="tab" href="#users">Premium Users</a></li>
-    <li><a data-toggle="tab" href="#ingredients">Ingredients</a></li>
-    <li><a data-toggle="tab" href="#dishes">Dishes</a></li>
-    <li><a data-toggle="tab" href="#orders">Orders</a></li>
+<ul class="nav nav-pills">
+    <li class="active btn"><a data-toggle="tab" href="#users">Premium Users</a></li>
+    <li class="btn"><a data-toggle="tab" href="#ingredients">Ingredients</a></li>
+    <li class="btn"><a data-toggle="tab" href="#dishes">Dishes</a></li>
+    <li class="btn"><a data-toggle="tab" href="#orders">Orders</a></li>
 </ul>
 
 <div class="tab-content">
@@ -19,12 +19,12 @@
         @await Html.PartialAsync("_UserPartial", Model.UserEditViewModel)
     </div>
     <div id="ingredients" class="tab-pane fade">
-        @await Html.PartialAsync("_IngredientsPartial", Model.UserEditViewModel)
+        @await Html.PartialAsync("~/Views/Ingredients/Index.cshtml", Model.IngredientsEditViewModel.Ingredients)
     </div>
     <div id="dishes" class="tab-pane fade">
         @await Html.PartialAsync("_AdminDishesPartial", Model.AdminDishesViewModel)
     </div>
     <div id="orders" class="tab-pane fade">
-        @await Html.PartialAsync("_OrdersPartial", Model.UserEditViewModel)
+        @await Html.PartialAsync("_OrdersPartial", Model.OrdersViewModel)
     </div>
 </div>

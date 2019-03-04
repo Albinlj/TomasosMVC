@@ -2,25 +2,35 @@
 @using Tomasos.Data
 @inject IdentityContext IdentityContext
 
-<table>
+<h1>Users</h1>
+
+<table class="table">
     <tr>
-        <th>Is Premium User</th>
         <th>Name</th>
+        <th>Bonus Points</th>
+        <th>Is Premium</th>
     </tr>
     @foreach (var user in Model.Users)
     {
         <tr>
+            <td>@user.Name</td>
             <td>
-                <input type="checkbox"
-                       asp-controller="admin"
-                       asp-action="ChangePremium"
-                       asp-route-id="@user.UserId"
-                       asp-route-isPremium="true"
-                       checked="@user.IsPremium"
-                       value="@user.IsPremium" />
+                @user.BonusPoints
+            </td>
+            <td id="@user.UserId">
                 @user.IsPremium
             </td>
-            <td>@user.Name</td>
+            <td>
+                <a data-ajax="true"
+                   data-ajax-method="get"
+                   data-ajax-mode="replace"
+                   data-ajax-update="#@user.UserId"
+                   asp-controller="admin"
+                   asp-action="ChangePremium"
+                   asp-route-id="@user.UserId">
+                    Change Premium Status
+                </a>
+            </td>
         </tr>
     }
 </table>

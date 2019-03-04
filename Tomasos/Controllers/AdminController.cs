@@ -11,6 +11,7 @@ using Tomasos.Data;
 using Tomasos.Models;
 using Tomasos.Models.AdminViewModels;
 using Tomasos.Models.DishViewModels;
+using Tomasos.Models.OrderViewModels;
 
 namespace Tomasos.Controllers
 {
@@ -40,6 +41,7 @@ namespace Tomasos.Controllers
                     new UserEditViewModel.UserPremiumViewModel()
                     {
                         Name = user.FirstName + " " + user.LastName,
+                        BonusPoints = user.BonusPoints,
                         IsPremium = await UserManager.IsInRoleAsync(user, Roles.Premium.ToString()),
                         UserId = user.Id
                     });
@@ -47,7 +49,7 @@ namespace Tomasos.Controllers
 
             foreach (var dish in IdentityContext.Dishes)
             {
-                viewModel.AdminDishesViewModel.EditDishViewModels.Add(new EditDishViewModel()
+                viewModel.AdminDishesViewModel.EditDishViewModels.Add(new DishViewModel()
                 {
                     Dish = dish,
                     //availableIngredients = dish.Ingredients,
@@ -55,23 +57,35 @@ namespace Tomasos.Controllers
                 });
             }
 
+            viewModel.OrdersViewModel.Orders = IdentityContext.Orders.Include(o => o.OrderDishes).ToList();
+            viewModel.IngredientsEditViewModel.Ingredients = IdentityContext.Ingredients.ToList();
+
             return View(viewModel);
         }
 
-        public async Task<IActionResult> ChangePremium(string id, bool isPremium)
+        public async Task<IActionResult> ChangePremium(string id)
         {
             AppUser user = await UserManager.FindByIdAsync(id);
-            AppUser user2 = await UserManager.FindByIdAsync(id);
+
+            bool isPremium = await UserManager.IsInRoleAsync(user, Roles.Premium.ToString());
             if (user != null)
             {
                 if (isPremium)
-                    await UserManager.AddToRoleAsync(user, Roles.Premium.ToString());
-                else
                     await UserManager.RemoveFromRoleAsync(user, Roles.Premium.ToString());
+                else
+                    await UserManager.AddToRoleAsync(user, Roles.Premium.ToString());
             }
-            return Ok();
+
+            return Content(!isPremium ? "True" : "False");
+            //return View(user);
         }
 
-
+        [HttpGet]
+        public IActionResult Orders()
+        {
+            var model = new OrdersViewModel();
+            model.Orders = IdentityContext.Orders.ToList();
+            return View(model);
+        }
     }
 }

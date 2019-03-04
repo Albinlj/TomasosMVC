@@ -7,16 +7,19 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Tomasos.Models.DishViewModels
 {
-    public class EditDishViewModel
+    public class DishViewModel
     {
         public Dish Dish { get; set; }
 
-        [Display(Name = "DishIngredients")]
+        [Display(Name = "Dish Ingredients")]
+        [RegularExpression("^[a-zèA-Z ]{2,}$", ErrorMessage = "Name can only contain letters A-Z")]
         public List<Ingredient> AvailableIngredients { get; set; }
+
         public List<int> ChosenIngredients { get; set; }
 
         [Display(Name = "Category")]
         public List<DishType> DishTypes { get; set; }
+        [Required]
         public int SelectedTypeId { get; set; }
 
         //[Display(Name = "Ingredient Name")]

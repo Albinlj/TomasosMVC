@@ -10,8 +10,8 @@ using Tomasos.Data;
 namespace Tomasos.Migrations
 {
     [DbContext(typeof(IdentityContext))]
-    [Migration("20190228132943_BonusPoints")]
-    partial class BonusPoints
+    [Migration("20190303174204_init2")]
+    partial class init2
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -140,6 +140,8 @@ namespace Tomasos.Migrations
 
                     b.Property<string>("Address");
 
+                    b.Property<int>("Bonus");
+
                     b.Property<int>("BonusPoints");
 
                     b.Property<string>("City");
@@ -204,7 +206,8 @@ namespace Tomasos.Migrations
 
                     b.Property<string>("Name");
 
-                    b.Property<int>("Price");
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(5, 2)");
 
                     b.Property<int?>("TypeId");
 
@@ -253,9 +256,13 @@ namespace Tomasos.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<int?>("DishId");
+
                     b.Property<string>("Name");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("DishId");
 
                     b.ToTable("Ingredients");
                 });
@@ -270,7 +277,8 @@ namespace Tomasos.Migrations
 
                     b.Property<DateTime>("OrderDate");
 
-                    b.Property<int>("Sum");
+                    b.Property<decimal>("Sum")
+                        .HasColumnType("decimal(5, 2)");
 
                     b.Property<string>("UserId");
 
@@ -357,12 +365,19 @@ namespace Tomasos.Migrations
             modelBuilder.Entity("Tomasos.Models.DishIngredient", b =>
                 {
                     b.HasOne("Tomasos.Models.Dish", "Dish")
-                        .WithMany("Ingredients")
+                        .WithMany("DishIngredients")
                         .HasForeignKey("DishId");
 
                     b.HasOne("Tomasos.Models.Ingredient", "Ingredient")
-                        .WithMany("DishIngredients")
+                        .WithMany()
                         .HasForeignKey("IngredientId");
+                });
+
+            modelBuilder.Entity("Tomasos.Models.Ingredient", b =>
+                {
+                    b.HasOne("Tomasos.Models.Dish")
+                        .WithMany("Ingredients")
+                        .HasForeignKey("DishId");
                 });
 
             modelBuilder.Entity("Tomasos.Models.Order", b =>

@@ -1,18 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace Tomasos.Models
 {
     public partial class Ingredient
     {
-        public Ingredient()
-        {
-            DishIngredients = new HashSet<DishIngredient>();
-        }
-
         public int Id { get; set; }
+
+        [Required]
+        [StringLength(15)]
         public string Name { get; set; }
 
-        public virtual ICollection<DishIngredient> DishIngredients { get; set; }
     }
 }

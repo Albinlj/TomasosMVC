@@ -7,18 +7,15 @@
 {
     <form asp-area="" asp-controller="Account" asp-action="Logout" method="post" id="logoutForm" class="navbar-right">
         <ul class="nav navbar-nav navbar-right">
-            <li>
-                <a asp-area="" asp-controller="Account" asp-action="Edit" title="Manage">Hello @UserManager.GetUserName(User)!</a>
-            </li>
-            <li>
-                <button type="submit" class="btn btn-link navbar-btn navbar-link">Log out</button>
+            <li class="nav-item btn">
+                <a class="nav-item text-dark" asp-area="" asp-controller="Account" asp-action="Edit" title="Manage">Welcome @UserManager.GetUserName(User)!</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Edit">Edit</a>
+                <button type="submit" class="btn btn-link navbar-btn navbar-link text-dark">Log out</button>
             </li>
             @if (User.IsInRole(Roles.Administrator.ToString()))
             {
-                <li>
+                <li class="nav-item">
                     <a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="Index">Admin Panel</a>
                 </li>
             }
@@ -27,8 +24,6 @@
 }
 else
 {
-    <ul class="nav navbar-nav navbar-right">
-        <li><a asp-area="" asp-controller="Account" asp-action="Register">Register</a></li>
-        <li><a asp-area="" asp-controller="Account" asp-action="Login">Log in</a></li>
-    </ul>
+    <li class="nav-item btn"><a class="text-dark" asp-area="" asp-controller="Account" asp-action="Register">Register</a></li>
+    <li class="nav-item btn"><a class="text-dark" asp-area="" asp-controller="Account" asp-action="Login">Log in</a></li>
 }

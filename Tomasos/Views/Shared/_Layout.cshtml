@@ -1,4 +1,7 @@
-﻿<!DOCTYPE html>
+﻿@using Tomasos.Helpers
+@inject  Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
@@ -25,7 +28,7 @@
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Tomasos</a>
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Pizzeria Tomasos</a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -33,15 +36,14 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Menu" asp-action="Index">Menu</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Menu" asp-action="Index">Meny</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Cart" asp-action="Index">Cart(@(HttpContextAccessor.HttpContext.Session.GetObjectFromJson<CartModelView>("cartModelView").Items.Sum(cmv=>cmv.Quantity)))</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Cart" asp-action="Index">Cart</a>
+                            @await Html.PartialAsync("_LoginPartial")
                         </li>
-                        @await Html.PartialAsync("_LoginPartial")
                     </ul>
                 </div>
             </div>
@@ -55,8 +57,8 @@
     </div>
 
     <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2019 - Tomasos - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        <div class="text-center container">
+             Tomasos Pizzeria - Strutknakargatan 9 13160 Nacka - 0727453829 - Öppet 24/7
         </div>
     </footer>
 

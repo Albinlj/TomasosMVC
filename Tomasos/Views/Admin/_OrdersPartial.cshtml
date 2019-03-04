@@ -1,2 +1,54 @@
-﻿@model Tomasos.Models.AdminViewModels.UserEditViewModel
+﻿@model Tomasos.Models.OrderViewModels.OrdersViewModel
+<h1>Orders</h1>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                ID
+            </th>
+            <th>
+                Name
+            </th>
+            <th>
+                Dishes
+            </th>
+            <th>
+                Sum
+            </th>
+            <th>
+                Is Delivered
+            </th>
+        </tr>
+    </thead>
+    <tbody>
 
+        @foreach (Order order in Model.Orders)
+        {
+            <tr>
+                <td>
+                    @order.Id
+                </td>
+                <td>
+                    @order.User.FirstName @order.User.LastName
+                </td>
+                <td>
+                    @order.OrderDishes.Sum(od => od.Amount)
+                </td>
+                <td>
+                    @order.Sum
+                </td>
+                <td>
+                    @(order.IsDelivered ? "Yes" : "No")
+                </td>
+                <td>
+                    <a asp-controller="Order" asp-action="Delete" asp-route-id="@order.Id">Delete</a>
+                    @if (!order.IsDelivered)
+                    {
+                        @("|")
+                        <a asp-controller="Order" asp-action="Delivered" asp-route-id="@order.Id">Mark Delivered</a>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

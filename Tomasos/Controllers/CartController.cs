@@ -27,22 +27,18 @@ namespace Tomasos.Controllers
         [Route("index")]
         public IActionResult Index()
         {
-            CartModelView cartModelView = SessionHelper.GetObjectFromJson<CartModelView>(HttpContext.Session, "cartModelView");
+            CartModelView cartModelView = HttpContext.Session.GetObjectFromJson<CartModelView>("cartModelView");
             if (cartModelView == null)
             {
                 return RedirectToAction("empty", "Cart");
             }
-            //if (cartModelView.Items.Count == 0)
-            //{
-            //}
             return View(cartModelView);
         }
 
         [Route("add/{id}")]
         public IActionResult Add(int id)
         {
-            //ProductModel productModel = new ProductModel();
-            if (SessionHelper.GetObjectFromJson<CartModelView>(HttpContext.Session, "cartModelView") == null)
+            if (HttpContext.Session.GetObjectFromJson<CartModelView>("cartModelView") == null)
             {
                 CartModelView cartModelView = new CartModelView();
 
@@ -52,11 +48,11 @@ namespace Tomasos.Controllers
                     Quantity = 1
                 });
 
-                SessionHelper.SetObjectAsJson(HttpContext.Session, "cartModelView", cartModelView);
+                HttpContext.Session.SetObjectAsJson("cartModelView", cartModelView);
             }
             else
             {
-                CartModelView cartModelView = SessionHelper.GetObjectFromJson<CartModelView>(HttpContext.Session, "cartModelView");
+                CartModelView cartModelView = HttpContext.Session.GetObjectFromJson<CartModelView>("cartModelView");
                 int index = ExistsInCart(id);
                 if (index != -1)
                 {
@@ -70,15 +66,15 @@ namespace Tomasos.Controllers
                         Quantity = 1
                     });
                 }
-                SessionHelper.SetObjectAsJson(HttpContext.Session, "cartModelView", cartModelView);
+                HttpContext.Session.SetObjectAsJson("cartModelView", cartModelView);
             }
-            return RedirectToAction("Index");
+            return RedirectToAction("Index", "Menu");
         }
 
         [Route("remove/{id}")]
         public IActionResult Remove(int id)
         {
-            CartModelView cart = SessionHelper.GetObjectFromJson<CartModelView>(HttpContext.Session, "cartModelView");
+            CartModelView cart = HttpContext.Session.GetObjectFromJson<CartModelView>("cartModelView");
             int index = ExistsInCart(id);
             if (index != -1)
             {
@@ -91,7 +87,7 @@ namespace Tomasos.Controllers
                     cart.Items.RemoveAt(index);
                 }
             }
-            SessionHelper.SetObjectAsJson(HttpContext.Session, "cartModelView", cart);
+            HttpContext.Session.SetObjectAsJson("cartModelView", cart);
             return RedirectToAction("Index");
         }
 
@@ -111,10 +107,17 @@ namespace Tomasos.Controllers
         public async Task<IActionResult> Order()
         {
             CartModelView cartModelView = HttpContext.Session.GetObjectFromJson<CartModelView>("cartModelView");
+
+            if (cartModelView == null || cartModelView.Items.Count == 0)
+            {
+                return RedirectToAction("Index");
+            }
+
             if (User.Identity.Name == null)
             {
                 return View("~/Views/Account/Login.cshtml");
             }
+
             AppUser currentUser = await UserManager.FindByNameAsync(User.Identity.Name);
             Order newOrder =
                 new Order
@@ -147,15 +150,25 @@ namespace Tomasos.Controllers
                 && pizzaOrderDishes.Count > 0)
             {
                 newOrder.Sum -= pizzaOrderDishes[0].Amount;
+                currentUser.BonusPoints -= 100;
+                IdentityContext.Users.Update(currentUser);
             }
+
 
             if (await UserManager.IsInRoleAsync(currentUser, Roles.Premium.ToString()))
             {
-                newOrder.Sum = Math.Round(newOrder.Sum * 0.8m);
+                if (cartModelView.Items.Sum(i => i.Quantity) >= 3)
+                {
+                    newOrder.Sum = Math.Round(newOrder.Sum * 0.8m);
+                }
                 currentUser.BonusPoints += newOrder.OrderDishes.Count * 10;
             }
 
             await IdentityContext.SaveChangesAsync();
+
+            CartModelView emptyCart = new CartModelView();
+            HttpContext.Session.SetObjectAsJson("cartModelView", emptyCart);
+
             return RedirectToAction("complete", newOrder);
         }
 

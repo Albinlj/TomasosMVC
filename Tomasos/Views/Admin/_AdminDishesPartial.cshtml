@@ -1,7 +1,11 @@
 ﻿@using Tomasos.Models.DishViewModels
 @model Tomasos.Models.AdminViewModels.AdminDishesViewModel
 <h1>Edit Dishes</h1>
-@foreach (EditDishViewModel editDishViewModel in Model.EditDishViewModels)
+<p>
+    <a asp-controller="Dish" asp-action="Create">Create New</a>
+</p>
+
+@foreach (DishViewModel editDishViewModel in Model.EditDishViewModels)
 {
     <div id="@editDishViewModel.Dish.Id">
 
