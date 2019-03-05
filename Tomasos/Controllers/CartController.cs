@@ -149,8 +149,8 @@ namespace Tomasos.Controllers
             if (currentUser.BonusPoints >= 100
                 && pizzaOrderDishes.Count > 0)
             {
-                newOrder.Sum -= pizzaOrderDishes[0].Amount;
-                currentUser.BonusPoints -= 100;
+                newOrder.Sum -= pizzaOrderDishes[0].Dish.Price;
+                currentUser.BonusPoints -= 110;
                 IdentityContext.Users.Update(currentUser);
             }
 
@@ -161,7 +161,7 @@ namespace Tomasos.Controllers
                 {
                     newOrder.Sum = Math.Round(newOrder.Sum * 0.8m);
                 }
-                currentUser.BonusPoints += newOrder.OrderDishes.Count * 10;
+                currentUser.BonusPoints += newOrder.OrderDishes.Sum(od=>od.Amount) * 10;
             }
 
             await IdentityContext.SaveChangesAsync();

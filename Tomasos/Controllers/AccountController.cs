@@ -20,18 +20,18 @@ namespace Tomasos.Controllers
     {
 
 
-        private readonly UserManager<AppUser> _userManager;
-        private readonly SignInManager<AppUser> _signInManager;
-        private readonly ILogger _logger;
+        public UserManager<AppUser> UserManager { get; }
+        public SignInManager<AppUser> SignInManager { get; }
+        public ILogger Logger { get; }
 
         public AccountController(
         UserManager<AppUser> userManager,
         SignInManager<AppUser> signInManager,
         ILogger<AccountController> logger)
         {
-            _userManager = userManager;
-            _signInManager = signInManager;
-            _logger = logger;
+            UserManager = userManager;
+            SignInManager = signInManager;
+            Logger = logger;
         }
 
 
@@ -60,7 +60,7 @@ namespace Tomasos.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit()
         {
-            AppUser user = await _userManager.FindByNameAsync(User.Identity.Name);
+            AppUser user = await UserManager.FindByNameAsync(User.Identity.Name);
             EditUserViewModel model = new EditUserViewModel
             {
                 Address = user.Address,
@@ -77,7 +77,7 @@ namespace Tomasos.Controllers
         [HttpPost]
         public async Task<IActionResult> Edit(EditUserViewModel model)
         {
-            AppUser currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+            AppUser currentUser = await UserManager.FindByNameAsync(User.Identity.Name);
             currentUser.Address = model.Address;
             currentUser.City = model.City;
             currentUser.FirstName = model.FirstName;
@@ -85,7 +85,7 @@ namespace Tomasos.Controllers
             currentUser.PostalCode = model.PostalCode;
             currentUser.PhoneNumber = model.PhoneNumber;
             currentUser.PostalCode = model.PostalCode;
-            await _userManager.UpdateAsync(currentUser);
+            await UserManager.UpdateAsync(currentUser);
             return View(model);
         }
 
@@ -118,13 +118,13 @@ namespace Tomasos.Controllers
                 City = model.City,
                 PhoneNumber = model.PhoneNumber
             };
-            var result = await _userManager.CreateAsync(user, model.Password);
+            var result = await UserManager.CreateAsync(user, model.Password);
 
             if (result.Succeeded)
             {
-                await _userManager.AddToRoleAsync(user, Roles.Premium.ToString());
-                await _signInManager.SignInAsync(user, isPersistent: false);
-                _logger.LogInformation("User created a new account with password.");
+                await UserManager.AddToRoleAsync(user, Roles.Premium.ToString());
+                await SignInManager.SignInAsync(user, isPersistent: false);
+                Logger.LogInformation("User created a new account with password.");
                 return RedirectToLocal(returnUrl);
             }
             AddErrors(result);
@@ -152,10 +152,10 @@ namespace Tomasos.Controllers
             {
                 // This doesn't count login failures towards account lockout
                 // To enable password failures to trigger account lockout, set lockoutOnFailure: true
-                var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
+                var result = await SignInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
                 if (result.Succeeded)
                 {
-                    _logger.LogInformation("User logged in.");
+                    Logger.LogInformation("User logged in.");
                     return RedirectToLocal(returnUrl);
                 }
                 else
@@ -171,9 +171,25 @@ namespace Tomasos.Controllers
         [HttpPost]
         public async Task<IActionResult> Logout()
         {
-            await _signInManager.SignOutAsync();
-            _logger.LogInformation("User logged out.");
+            await SignInManager.SignOutAsync();
+            Logger.LogInformation("User logged out.");
             return RedirectToAction(nameof(HomeController.Index), "Home");
+        }
+
+        public async Task<IActionResult> ChangePremium(string id)
+        {
+            AppUser user = await UserManager.FindByIdAsync(id);
+
+            bool isPremium = await UserManager.IsInRoleAsync(user, Roles.Premium.ToString());
+            if (user != null)
+            {
+                if (isPremium)
+                    await UserManager.RemoveFromRoleAsync(user, Roles.Premium.ToString());
+                else
+                    await UserManager.AddToRoleAsync(user, Roles.Premium.ToString());
+            }
+
+            return Content(!isPremium ? "True" : "False");
         }
 
 

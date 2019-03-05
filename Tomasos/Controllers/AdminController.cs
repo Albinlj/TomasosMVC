@@ -30,7 +30,6 @@ namespace Tomasos.Controllers
             IdentityContext = identityContext;
         }
 
-        //public IActionResult Index()
         public async Task<IActionResult> Index()
         {
             AdminViewModel viewModel = new AdminViewModel();
@@ -52,7 +51,6 @@ namespace Tomasos.Controllers
                 viewModel.AdminDishesViewModel.EditDishViewModels.Add(new DishViewModel()
                 {
                     Dish = dish,
-                    //availableIngredients = dish.Ingredients,
                     DishTypes = IdentityContext.DishTypes.ToList()
                 });
             }
@@ -77,15 +75,7 @@ namespace Tomasos.Controllers
             }
 
             return Content(!isPremium ? "True" : "False");
-            //return View(user);
         }
 
-        [HttpGet]
-        public IActionResult Orders()
-        {
-            var model = new OrdersViewModel();
-            model.Orders = IdentityContext.Orders.ToList();
-            return View(model);
-        }
     }
 }
