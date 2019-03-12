@@ -61,21 +61,5 @@ namespace Tomasos.Controllers
             return View(viewModel);
         }
 
-        public async Task<IActionResult> ChangePremium(string id)
-        {
-            AppUser user = await UserManager.FindByIdAsync(id);
-
-            bool isPremium = await UserManager.IsInRoleAsync(user, Roles.Premium.ToString());
-            if (user != null)
-            {
-                if (isPremium)
-                    await UserManager.RemoveFromRoleAsync(user, Roles.Premium.ToString());
-                else
-                    await UserManager.AddToRoleAsync(user, Roles.Premium.ToString());
-            }
-
-            return Content(!isPremium ? "True" : "False");
-        }
-
     }
 }
